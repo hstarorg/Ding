@@ -1,0 +1,42 @@
+# ===== macOS =====
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+
+# ===== Xcode：用户态 / 自动生成 =====
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+DerivedData/
+build/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Xcode 内嵌的 SwiftPM 用户配置
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/configuration/
+*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+
+# ===== Swift Package Manager（方式 B：命令行 build）=====
+.build/
+.swiftpm/
+Package.resolved
+
+# ===== 方式 B 打包产物 =====
+*.app
+
+# ===== 杂项 =====
+*.log
