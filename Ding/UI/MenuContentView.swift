@@ -48,7 +48,9 @@ struct MenuContentView: View {
                         }
                     }
                 }
-                .frame(maxHeight: 280)
+                // ScrollView has no intrinsic height; in a self-sizing MenuBarExtra
+                // window it collapses to 0. Pin a concrete height (capped, scrollable).
+                .frame(height: min(CGFloat(store.reminders.count) * 46, 300))
             }
 
             Divider()
