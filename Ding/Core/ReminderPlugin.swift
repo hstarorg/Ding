@@ -16,8 +16,11 @@ struct EvalContext {
 /// Edge-triggered semantics: the `triggered` flag lives on `Reminder` and is
 /// persisted by the engine, so a condition that stays true won't fire repeatedly.
 enum EvalOutcome {
-    /// Condition just became true (rising edge): fire the reminder.
+    /// Condition became true (rising edge): fire; the reminder stays active and
+    /// re-arms once the condition later clears (`.rearm`).
     case fire(TriggerResult)
+    /// Fire once, then disable this reminder permanently (one-shot).
+    case fireOnce(TriggerResult)
     /// Condition cleared: reset `triggered` so it can fire again later.
     case rearm
     /// Nothing to do this tick.

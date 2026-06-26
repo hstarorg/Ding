@@ -34,6 +34,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         // Run as a menu-bar accessory: no Dock icon, no app-switcher entry.
         NSApp.setActivationPolicy(.accessory)
-        // ReminderEngine.shared.start() is wired up in a later step.
+        // Start the evaluation loop that drives reminders.
+        ReminderEngine.shared.start()
     }
 }
