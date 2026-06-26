@@ -13,19 +13,10 @@ struct DingApp: App {
 
     var body: some Scene {
         MenuBarExtra("Ding", systemImage: "bell.badge") {
-            // Placeholder menu — the full list / add UI arrives in a later step.
-            Text("Ding · \(store.reminders.count) reminder(s)")
-            // TEMP: verify the always-on-top popup; removed once the engine drives it.
-            Button("Test popup") {
-                PopupManager.shared.show(
-                    title: "Ding test",
-                    body: "This popup floats above everything. Click Got it to dismiss."
-                )
-            }
-            Divider()
-            Button("Quit Ding") { NSApplication.shared.terminate(nil) }
-                .keyboardShortcut("q")
+            MenuContentView()
+                .environmentObject(store)
         }
+        .menuBarExtraStyle(.window)
     }
 }
 

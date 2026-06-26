@@ -8,8 +8,8 @@ import Foundation
 ///   - `CryptoPriceReminderPlugin()` (Step 6)
 enum PluginRegistry {
     static let all: [ReminderPlugin] = [
-        // TimeReminderPlugin(),
-        // CryptoPriceReminderPlugin(),
+        TimeReminderPlugin(),
+        // CryptoPriceReminderPlugin(), // added in Step 6
     ]
 
     static func plugin(for id: String) -> ReminderPlugin? {
