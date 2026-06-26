@@ -9,7 +9,7 @@ import Foundation
 enum PluginRegistry {
     static let all: [ReminderPlugin] = [
         TimeReminderPlugin(),
-        // CryptoPriceReminderPlugin(), // added in Step 6
+        CryptoPriceReminderPlugin(),
     ]
 
     static func plugin(for id: String) -> ReminderPlugin? {
