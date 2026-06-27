@@ -1,15 +1,27 @@
 import SwiftUI
 
-/// Inline "add reminder" form: pick a plugin, render its config editor, save.
+/// Inline form to add a new reminder or edit an existing one.
+/// Pass `editing` to edit; leave nil to create.
 struct AddReminderView: View {
     @EnvironmentObject private var store: ReminderStore
-    let onClose: () -> Void
 
-    @State private var pluginId: String = PluginRegistry.all.first?.id ?? ""
-    @State private var title: String = ""
-    @State private var config: [String: String] = [:]
+    private let editing: Reminder?
+    private let onClose: () -> Void
+
+    @State private var pluginId: String
+    @State private var title: String
+    @State private var config: [String: String]
+
+    init(editing: Reminder? = nil, onClose: @escaping () -> Void) {
+        self.editing = editing
+        self.onClose = onClose
+        _pluginId = State(initialValue: editing?.pluginId ?? PluginRegistry.all.first?.id ?? "")
+        _title = State(initialValue: editing?.title ?? "")
+        _config = State(initialValue: editing?.config ?? [:])
+    }
 
     private var plugin: ReminderPlugin? { PluginRegistry.plugin(for: pluginId) }
+    private var isEditing: Bool { editing != nil }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -18,7 +30,7 @@ struct AddReminderView: View {
                     Image(systemName: "chevron.left")
                 }
                 .buttonStyle(.borderless)
-                Text("Add Reminder").font(.headline)
+                Text(isEditing ? "Edit Reminder" : "Add Reminder").font(.headline)
                 Spacer()
             }
 
@@ -30,6 +42,8 @@ struct AddReminderView: View {
                 }
             }
             .onChange(of: pluginId) { _, _ in resetConfig() }
+            // Changing a reminder's type would invalidate its config; lock it when editing.
+            .disabled(isEditing)
 
             TextField("Name (optional)", text: $title)
 
@@ -49,7 +63,10 @@ struct AddReminderView: View {
         }
         .padding(12)
         .frame(width: 320)
-        .onAppear(perform: resetConfig)
+        .onAppear {
+            // Fill defaults for a brand-new reminder; keep existing config when editing.
+            if editing == nil { resetConfig() }
+        }
     }
 
     private func resetConfig() {
@@ -58,12 +75,16 @@ struct AddReminderView: View {
 
     private func save() {
         guard let plugin else { return }
-        let reminder = Reminder(
-            pluginId: plugin.id,
-            title: title.isEmpty ? plugin.displayName : title,
-            config: config
-        )
-        store.add(reminder)
+        let name = title.isEmpty ? plugin.displayName : title
+
+        if var existing = editing {
+            existing.title = name
+            existing.config = config
+            existing.triggered = false  // re-arm after editing
+            store.update(existing)
+        } else {
+            store.add(Reminder(pluginId: plugin.id, title: name, config: config))
+        }
         onClose()
     }
 }

@@ -5,11 +5,14 @@ import SwiftUI
 struct MenuContentView: View {
     @EnvironmentObject private var store: ReminderStore
     @State private var adding = false
+    @State private var editing: Reminder?
 
     var body: some View {
         Group {
             if adding {
                 AddReminderView(onClose: { adding = false })
+            } else if let editing {
+                AddReminderView(editing: editing, onClose: { self.editing = nil })
             } else {
                 list
             }
@@ -43,7 +46,7 @@ struct MenuContentView: View {
                 ScrollView {
                     VStack(spacing: 0) {
                         ForEach(store.reminders) { reminder in
-                            ReminderRow(reminder: reminder)
+                            ReminderRow(reminder: reminder, onEdit: { editing = reminder })
                             Divider()
                         }
                     }
@@ -67,24 +70,33 @@ struct MenuContentView: View {
 private struct ReminderRow: View {
     @EnvironmentObject private var store: ReminderStore
     let reminder: Reminder
+    let onEdit: () -> Void
 
     private var plugin: ReminderPlugin? { PluginRegistry.plugin(for: reminder.pluginId) }
 
     var body: some View {
         HStack(spacing: 10) {
-            Image(systemName: plugin?.iconSystemName ?? "bell")
-                .foregroundStyle(.orange)
-                .frame(width: 18)
+            // Tap the icon + text area to edit this reminder.
+            Button(action: onEdit) {
+                HStack(spacing: 10) {
+                    Image(systemName: plugin?.iconSystemName ?? "bell")
+                        .foregroundStyle(.orange)
+                        .frame(width: 18)
 
-            VStack(alignment: .leading, spacing: 2) {
-                Text(reminder.title)
-                    .font(.system(size: 13, weight: .medium))
-                Text(plugin?.summary(reminder.config) ?? "Unknown plugin")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(reminder.title)
+                            .font(.system(size: 13, weight: .medium))
+                        Text(plugin?.summary(reminder.config) ?? "Unknown plugin")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Spacer()
+                }
+                .contentShape(Rectangle())
             }
-
-            Spacer()
+            .buttonStyle(.plain)
+            .help("Edit")
 
             Toggle("", isOn: Binding(
                 get: { reminder.enabled },
