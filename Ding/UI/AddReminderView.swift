@@ -58,7 +58,7 @@ struct AddReminderView: View {
                 Button("Cancel", action: onClose)
                 Button("Save", action: save)
                     .keyboardShortcut(.defaultAction)
-                    .disabled(plugin == nil)
+                    .disabled(!(plugin?.isValid(config) ?? false))
             }
         }
         .padding(12)
@@ -81,6 +81,7 @@ struct AddReminderView: View {
             existing.title = name
             existing.config = config
             existing.triggered = false  // re-arm after editing
+            existing.enabled = true     // editing implies you want it active
             store.update(existing)
         } else {
             store.add(Reminder(pluginId: plugin.id, title: name, config: config))

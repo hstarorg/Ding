@@ -50,6 +50,13 @@ protocol ReminderPlugin {
     /// The plugin's config editor, bound to the reminder's config dictionary.
     func configView(_ config: Binding<[String: String]>) -> AnyView
 
+    /// Whether the given config is complete enough to save. Defaults to true.
+    func isValid(_ config: [String: String]) -> Bool
+
     /// Evaluate whether this reminder should fire now. May be async (e.g. network).
     func evaluate(_ reminder: Reminder, _ ctx: EvalContext) async -> EvalOutcome
+}
+
+extension ReminderPlugin {
+    func isValid(_ config: [String: String]) -> Bool { true }
 }

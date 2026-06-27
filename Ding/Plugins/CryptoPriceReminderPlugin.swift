@@ -24,6 +24,10 @@ struct CryptoPriceReminderPlugin: ReminderPlugin {
         AnyView(CryptoConfigView(config: config))
     }
 
+    func isValid(_ config: [String: String]) -> Bool {
+        !(config["symbol"] ?? "").isEmpty && Double(config["threshold"] ?? "") != nil
+    }
+
     func evaluate(_ reminder: Reminder, _ ctx: EvalContext) async -> EvalOutcome {
         let symbol = (reminder.config["symbol"] ?? "").uppercased()
         guard !symbol.isEmpty,
