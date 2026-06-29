@@ -15,16 +15,12 @@ jobs:
   release:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Select latest stable Xcode
-        uses: maxim-lobanov/setup-xcode@v1
-        with:
-          xcode-version: latest-stable
+      - uses: actions/checkout@v5
 
       - name: Build (Release, ad-hoc signed)
         run: |
           set -euo pipefail
+          xcodebuild -version   # log the runner's default Xcode (16.x on macos-15)
           xcodebuild \
             -project Ding.xcodeproj \
             -scheme Ding \
@@ -45,7 +41,11 @@ jobs:
           hdiutil create -volname "Ding" -srcfolder "$STAGE" -ov -format UDZO Ding.dmg
 
       - name: Publish to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: Ding.dmg
-          generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # Use the runner's built-in gh CLI (no Node-based action).
+          gh release create "$TAG" Ding.dmg --title "$TAG" --generate-notes \
+            || gh release upload "$TAG" Ding.dmg --clobber
