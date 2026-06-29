@@ -17,6 +17,18 @@ Open `Ding.xcodeproj` in Xcode and press ⌘R (macOS 14+).
 
 The Crypto Price plugin needs network access: `Signing & Capabilities → App Sandbox → Outgoing Connections (Client)` (already enabled in the project).
 
+## Release & Install
+
+Push a version tag to build and publish a `.dmg` via GitHub Actions:
+
+```bash
+git tag v1.0.0 && git push origin v1.0.0
+```
+
+The workflow (`.github/workflows/release.yml`) builds Release, packages `Ding.dmg`, and attaches it to the GitHub Release. Open the DMG and drag **Ding** to Applications.
+
+> The build is **ad-hoc signed** (no Apple Developer account), so Gatekeeper will warn on first launch. Right-click the app → **Open**, or run `xattr -dr com.apple.quarantine /Applications/Ding.app`. For warning-free distribution, sign with a Developer ID certificate and notarize.
+
 ## Architecture
 
 ```
